@@ -10,26 +10,16 @@ local ip_start = 10
 local message_word = "getIp"
 local port = 10
 local port_extern = 11
-local ipTabel = {}
 
 function start()
-    local file = {} -- Create a variable in which it will be stored
-    -- Here we are loading the file with the path, the mode "t" (Only text chunks.) and out variable in which we will load the config
-    local f, err = loadfile(config_file, "t", file) -- load the file
-    if f then
-        f() -- run the chunk
-        -- now file should now contain our data
-        ipTabel = f
-    else
-        if not fs.exists("/etc/network/") then
-            local result, reason = fs.makeDirectory("/etc/network/")
-            if not result then
-                print("Error mkdir: " .. reason)
-            end
-        else
-            print(err)
+    if not fs.exists("/etc/network/") then
+        local result, reason = fs.makeDirectory("/etc/network/")
+        if not result then
+            print("Error mkdir: " .. reason)
         end
     end
+
+    local ipTabel = read_config(config_file)
 
     local t = thread.create(function()
 
