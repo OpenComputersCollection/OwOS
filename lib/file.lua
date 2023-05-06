@@ -36,6 +36,42 @@ function read_config(path)
     return table
 end
 
+function read_config_key(path, wantedKey)
+    local file = assert(io.open(path, "a"))
+    file:write("")
+    file:close()
+    
+    file = assert(io.open(path, "rb"))
+
+    if not file then return {} end
+
+    local content = file:read("*all")
+
+    file:close()
+
+    local key = ""
+    local value = ""
+
+    for line in string.gmatch(content, "([^,\n]+)") do
+        for v in string.gmatch(line, "([^=^]+)") do
+            if key == "" then
+                key = v
+            else
+                value = v
+            end
+        end
+
+        if key == wantedKey then
+            return value
+        end
+
+        key = "" 
+        value = ""
+    end
+
+    return nil
+end
+
 -- config_writer
 -- path: the path to write to
 -- name: name of the whole module
