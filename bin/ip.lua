@@ -12,5 +12,6 @@ if f then
         print(k, ":", v)
     end
 else
-    error(err)
+    print(err)
+    return 1
 end

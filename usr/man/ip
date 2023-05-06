@@ -1,0 +1,9 @@
+NAME
+  ip - Display all network infos from /etc/rc.d/interface
+
+SYNOPIS
+  ip
+
+EXAMPLES
+  ip
+    Prints ip and gateway
