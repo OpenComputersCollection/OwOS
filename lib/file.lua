@@ -15,7 +15,7 @@ end
 -- file: the file to write in
 -- name: name of the whole module
 -- config: the config module
-local function write_config(file, name, config)
+function write_config(file, name, config)
     -- Write start of config 
     file:write(name .. " = {\n")
 
