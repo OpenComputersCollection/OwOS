@@ -1,3 +1,5 @@
+local filesystem = require("filesystem")
+
 function read_config(path)
     local file = {} -- Create a variable in which it will be stored
     -- Here we are loading the file with the path, the mode "t" (Only text chunks.) and out variable in which we will load the config
