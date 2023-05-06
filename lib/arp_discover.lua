@@ -1,5 +1,6 @@
 require "file"
 local component = require("component")
+local event = require("event")
 
 local arp_path = "/etc/network/"
 local arp_cache = "arp.cache"
@@ -17,6 +18,6 @@ function discover(destinationIP)
     local type, dest, origin, port, distance, protocol, ip_address = event.pullFiltered(1, filterARP)
 
     local f = read_config(arp_path .. arp_cache)
-    f["links"][destinationIP] = origin
-    write_config(arp_path .. arp_cache, "links", f)
+    f[destinationIP] = origin
+    write_config(arp_path .. arp_cache, f)
 end
