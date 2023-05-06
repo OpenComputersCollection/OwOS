@@ -17,17 +17,4 @@ if not fs.exists(network_path) then
     end
 end
 
-local real, reason = fs.realPath(network_path .. file_name)
-if real then
-    local file
-    if fs.realPath(real) then
-        file = io.open(real, "w")
-    end
-
-    if file then
-        write_config(file, "network", config)
-        file:close()
-    end
-else
-    print("Error: " .. reason) 
-end
+write_config(network_path .. file_name, "network", config)
