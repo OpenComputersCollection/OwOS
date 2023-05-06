@@ -24,21 +24,21 @@ end
 if not fs.exists(network_path) then
     local result, reason = fs.makeDirectory(network_path)
     if not result then
-        print("error creating " .. network_path)
-    else
-        local real, reason = fs.realPath(network_path .. file_name)
-        if real then
-            local file
-            if fs.realPath(real) then
-                file = io.open(real, "w")
-            end
-
-            if file then
-                config_writer(file)
-                file:close()
-            end
-        else
-            print("Error: " .. reason) 
-        end
+        print("Error mkdir: " .. reason)
     end
+end
+
+local real, reason = fs.realPath(network_path .. file_name)
+if real then
+    local file
+    if fs.realPath(real) then
+        file = io.open(real, "w")
+    end
+
+    if file then
+        config_writer(file)
+        file:close()
+    end
+else
+    print("Error: " .. reason) 
 end
