@@ -12,7 +12,6 @@ local port_extern = 10
 local message_word = "getIp"
 local timeout = 10
 
-
 local config = {
     gateway = nil,
     ip = nil
@@ -32,7 +31,7 @@ local t = thread.create(function()
     while not config.ip do
         component.modem.broadcast(port_extern, message_word)
 
-        _, _, id, _, _, message = event.pull(timeout, "modem_message")
+        local _, _, id, _, _, message = event.pull(timeout, "modem_message")
 
         if message then
             config.ip = message
