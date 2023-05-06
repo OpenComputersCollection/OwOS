@@ -5,6 +5,8 @@ local event = require("event")
 local arp_path = "/etc/network/"
 local arp_cache = "arp.cache"
 
+component.modem.open(1)
+
 local function filterARP(type, dest, origin, port, _, protocol, ip_address)
     if type ~= "modem_message" or port ~= 1 or protocol ~= "ARP_RESPOND" then
         return false

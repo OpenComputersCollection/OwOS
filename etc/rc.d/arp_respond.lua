@@ -14,6 +14,7 @@ end
 function start()
     thread.create(function()
         if component.isAvailable("modem") then
+            component.modem.open(1)
             while true do
                 local type, dest, origin, port, distance, protocol, ip_address = event.pullFiltered(filterARP)
                 component.modem.send(origin, 1, "ARP_RESPOND", ip_address)
