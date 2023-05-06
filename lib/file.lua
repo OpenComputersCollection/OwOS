@@ -21,7 +21,7 @@ function read_config(path)
 
     for line in string.gmatch(content, "([^,\n]+)") do
         for v in string.gmatch(line, "([^=^]+)") do
-            if not key then
+            if key == "" then
                 key = v
             else
                 value = v
