@@ -12,18 +12,32 @@ function read_config(path)
 end
 
 -- config_writer
--- file: the file to write in
+-- path: the path to write to
 -- name: name of the whole module
 -- config: the config module
-function write_config(file, name, config)
-    -- Write start of config 
-    file:write(name .. " = {\n")
+function write_config(path, name, config)
+    -- Checking if file exists
+    local real, reason = filesystem.realPath(path)
+    if real then
+        local file
+        if filesystem.realPath(real) then
+            -- Open file
+            file = io.open(real, "w")
+        end
+        if file then
+            -- Write start of config 
+            file:write(name .. " = {\n")
 
-    -- Go through all config fields
-    for key, value in pairs(config) do
-        file:write(key .. "=" .. "\"" .. value .. "\"" .. ",\n")
-    end
+            -- Go through all config fields
+            for key, value in pairs(config) do
+                file:write(key .. "=" .. "\"" .. value .. "\"" .. ",\n")
+            end
 
-    -- End the config
-    file:write("}\n")
+            -- End the config
+            file:write("}\n")
+
+            file:close()
+        end
+    else
+        print("Error: " .. reason)
 end
