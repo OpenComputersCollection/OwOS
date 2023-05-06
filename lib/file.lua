@@ -40,4 +40,5 @@ function write_config(path, name, config)
         end
     else
         print("Error: " .. reason)
+    end
 end
