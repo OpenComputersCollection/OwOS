@@ -1,4 +1,5 @@
 local fs = require("filesystem")
+require "file"
 
 local network_path = "/etc/network/"
 local file_name = "interface"
@@ -8,16 +9,6 @@ local ip = "10.0.0.10"
 local config = {
     ip = ip
 }
-
-local function config_writer(file, name, config)
-    file:write(name .. " = {\n")
-
-    for key, value in pairs(config) do
-        file:write(key .. "=" .. "\"" .. value .. "\"" .. ",\n")
-    end
-
-    file:write("}\n")
-end
 
 if not fs.exists(network_path) then
     local result, reason = fs.makeDirectory(network_path)
