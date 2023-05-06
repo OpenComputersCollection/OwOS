@@ -11,14 +11,14 @@ local config = {
     ip = ip
 }
 
-local function config_writer(file)
-    file:write("network = {\n")
+local function config_writer(file, name, config)
+    file:write(name .. " = {\n")
 
     for key, value in pairs(config) do
         file:write(key .. "=" .. "\"" .. value .. "\"" .. ",\n")
     end
 
-    file:write("}")
+    file:write("}\n")
 end
 
 if not fs.exists(network_path) then
@@ -36,7 +36,7 @@ if real then
     end
 
     if file then
-        config_writer(file)
+        config_writer(file, "network", config)
         file:close()
     end
 else
