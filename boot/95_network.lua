@@ -3,11 +3,9 @@ local fs = require("filesystem")
 local network_path = "/etc/network/"
 local file_name = "interface"
 
-local interface = "eth0"
 local ip = "10.0.0.10"
 
 local config = {
-    interface = interface,
     ip = ip
 }
 
