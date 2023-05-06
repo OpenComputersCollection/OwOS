@@ -1,30 +1,49 @@
 local component = require("component")
+local fs = require("filesystem")
 local event = require("event")
 local thread = require("thread")
+require "file"
 
-
+local config_file = "/etc/network/iptable"
 local base_ip = "10.0.0."
 local ip_start = 10
 local message_word = "getIp"
 local port = 10
 local port_extern = 11
-
+local ipTabel = {}
 
 function start()
+    local file = {} -- Create a variable in which it will be stored
+    -- Here we are loading the file with the path, the mode "t" (Only text chunks.) and out variable in which we will load the config
+    local f, err = loadfile(config_file, "t", file) -- load the file
+    if f then
+        f() -- run the chunk
+        -- now file should now contain our data
+        ipTabel = f
+    else
+        if not fs.exists("/etc/network/") then
+            local result, reason = fs.makeDirectory("/etc/network/")
+            if not result then
+                print("Error mkdir: " .. reason)
+            end
+        else
+            print(err)
+        end
+    end
+
     local t = thread.create(function()
-        local ipTabel = {}
 
         -- Open port 10 for DHCP
         component.modem.open(port)
-    
+
         while component.modem.isOpen(port) do
             -- listen for DHCP ip request
             -- There is a timeout so if the thread gets killed it will stop and not freeze
-            _, _, id, _, _, message = event.pull(port,"modem_message")
+            _, _, id, _, _, message = event.pull(port, "modem_message")
 
             if message == message_word then
                 local setIp = nil
-                
+
                 -- Fuck you LUA
                 local lengthNum = 0
                 for k, v in pairs(ipTabel) do -- for every key in the table with a corresponding non-nil value 
@@ -41,15 +60,17 @@ function start()
                     setIp = base_ip .. ip_start + lengthNum
                     -- remember ip and id of computer
                     ipTabel[setIp] = id
+                    -- update config file
+                    write_config(config_file, "iptable", ipTabel)
                 end
-          
+
                 -- wait for Computer to switch to puller
                 os.sleep(1)
                 -- send ip to computer
                 component.modem.send(id, port_extern, setIp)
             end
         end
-      end):detach()
+    end):detach()
 end
 
 function stop()
