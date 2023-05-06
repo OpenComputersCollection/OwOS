@@ -45,7 +45,7 @@ function start()
     if t then
         t:join()
 
-        write_config(network_path .. file_name, "network", config) 
+        write_config(network_path .. file_name, config) 
     else 
         error("Get ip thread died abruptly")
     end

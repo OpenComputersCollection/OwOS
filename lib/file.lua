@@ -74,9 +74,8 @@ end
 
 -- config_writer
 -- path: the path to write to
--- name: name of the whole module
 -- config: the config module
-function write_config(path, name, config)
+function write_config(path, config)
     -- Checking if file exists
     local real, reason = filesystem.realPath(path)
     if real then

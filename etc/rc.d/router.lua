@@ -51,7 +51,7 @@ function start()
                     -- remember ip and id of computer
                     ipTabel[setIp] = id
                     -- update config file
-                    write_config(config_file, "iptable", ipTabel)
+                    write_config(config_file, ipTabel)
                 end
 
                 -- wait for Computer to switch to puller
