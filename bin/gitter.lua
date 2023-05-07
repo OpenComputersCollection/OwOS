@@ -12,14 +12,16 @@ local CONFIG = {}
 CONFIG.GIT = {}
 CONFIG.GIT.NAME = "OpenComputersCollection"
 CONFIG.GIT.REPO = "OwOS"
-CONFIG.GIT.BRANCH = "fix/dhcp"
-CONFIG.FOLDER = ""
+CONFIG.GIT.BRANCH = "main"
+CONFIG.FOLDER = "/"
 
 local args = shell.parse(...)
-if #args == 0 then
-    CONFIG.FOLDER = "/"
-else
+
+if #args == 1 then
     CONFIG.FOLDER = args[1]
+elseif #args == 2 then
+    CONFIG.GIT.BRANCH = args[1]
+    CONFIG.FOLDER = args[2]
 end
 
 -- downloading the json libs if they do not exsist
