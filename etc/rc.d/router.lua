@@ -1,8 +1,8 @@
-local component = require("component")
+local cm = require("component").modem
 local fs = require("filesystem")
 local event = require("event")
 local thread = require("thread")
-local cw = require "file"
+local cw = require("file")
 
 local config_file = "/etc/network/iptable"
 local config_interface_file = "/etc/network/interface"
@@ -13,6 +13,10 @@ local port = 10
 local protocol_response = "DHCP_RESPONSE"
 local protocol_request = "DHCP_REQUEST"
 
+local router_config = {
+    ip = base_ip .. "1"
+}
+
 function start()
     if not fs.exists("/etc/network/") then
         local result, reason = fs.makeDirectory("/etc/network/")
@@ -21,18 +25,16 @@ function start()
         end
     end
 
-    cw.write_config(config_interface_file, {
-        ip = base_ip .. "1"
-    })
+    cw.write_config(config_interface_file, router_config)
 
     local ipTabel = cw.read_config(config_file)
 
     local t = thread.create(function()
 
         -- Open port 10 for DHCP
-        component.modem.open(port)
+        cm.open(port)
 
-        while component.modem.isOpen(port) do
+        while cm.isOpen(port) do
 
             local function filterDHCPRequest(type, dest, origin, port, _, protocol, message)
                 -- check if the request is an arp request and if it is on the right port and if it is directed to this device
@@ -70,13 +72,13 @@ function start()
             -- wait for Computer to switch to puller
             os.sleep(1)
             -- send ip to computer
-            component.modem.send(id, port, protocol_response, setIp)
+            cm.send(id, port, protocol_response, setIp)
 
         end
     end):detach()
 end
 
 function stop()
-    component.modem.close(port)
+    cm.close(port)
 end
 

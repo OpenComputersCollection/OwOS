@@ -1,6 +1,8 @@
 local filesystem = require("filesystem")
 
-function read_config(path)
+local M = {}
+
+function M.read_config(path)
     local table = {} -- Create a variable in which it will be stored
     -- Here we are loading the file with the path, the mode "t" (Only text chunks.) and out variable in which we will load the config
     
@@ -36,7 +38,7 @@ function read_config(path)
     return table
 end
 
-function read_config_key(path, wantedKey)
+function M.read_config_key(path, wantedKey)
     local file = assert(io.open(path, "a"))
     file:write("")
     file:close()
@@ -75,7 +77,7 @@ end
 -- config_writer
 -- path: the path to write to
 -- config: the config module
-function write_config(path, config)
+function M.write_config(path, config)
     -- Checking if file exists
     local real, reason = filesystem.realPath(path)
     if real then
@@ -97,3 +99,5 @@ function write_config(path, config)
         print("Error: " .. reason)
     end
 end
+
+return M

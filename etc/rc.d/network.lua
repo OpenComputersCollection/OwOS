@@ -2,8 +2,7 @@ local fs = require("filesystem")
 local component = require("component")
 local thread = require("thread")
 local event = require "event"
-
-require "file"
+local cw = require("file")
 
 local network_path = "/etc/network/"
 local file_name = "interface"
@@ -50,7 +49,7 @@ function start()
 
         end
 
-        write_config(network_path .. file_name, config)
+        cw.write_config(network_path .. file_name, config)
     end):detach()
 end
 
