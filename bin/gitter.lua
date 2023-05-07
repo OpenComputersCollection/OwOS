@@ -9,6 +9,7 @@ CONFIG.GIT = {}
 CONFIG.GIT.NAME = "OpenComputersCollection"
 CONFIG.GIT.REPO = "OwOS"
 CONFIG.GIT.BRANCH = "fix/dhcp"
+CONFIG.FOLDER = "/home/test"
 
 local shell = require("shell")
 local internet = require("internet")
@@ -84,7 +85,6 @@ if (data) then
 
     local counter = 1
     while git == nil do
-        print(all_refs[counter].ref)
         if all_refs[counter].ref == "refs/heads/" .. CONFIG.GIT.BRANCH then
             git = json.decode(data)[counter].object
         end
@@ -111,7 +111,7 @@ if (data) then
         local commitdatatree = json.decode(commitdata).tree
         -- print("commitdatatree: ", tostring(commitdatatree))
 
-        downloadTree(commitdatatree.url)
+        downloadTree(commitdatatree.url, CONFIG.FOLDER)
     end
 
     --[[for _, v in pairs(git) do
