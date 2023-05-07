@@ -28,7 +28,7 @@ function start()
 
     local t = thread.create(function()
 
-        while not config.ip do
+        while not config.ip and component.modem.isOpen(port) do
             component.modem.broadcast(port, protocol_request, message_word)
 
             local function filterDHCPResponse(type, dest, origin, port, _, protocol)
