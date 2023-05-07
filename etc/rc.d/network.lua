@@ -1,16 +1,17 @@
 local fs = require("filesystem")
 local component = require("component")
 local thread = require("thread")
-local event  = require "event"
+local event = require "event"
 
 require "file"
 
 local network_path = "/etc/network/"
 local file_name = "interface"
-local port = 11
-local port_extern = 10
+local port = 10
 local message_word = "getIp"
 local timeout = 10
+local protocol_response = "DHCP_RESPONSE"
+local protocol_request = "DHCP_REQUEST"
 
 local config = {
     gateway = nil,
@@ -27,28 +28,32 @@ function start()
 
     component.modem.open(port)
 
-    local t = thread.create(function() 
+    local t = thread.create(function()
 
         while not config.ip do
-            component.modem.broadcast(port_extern, message_word)
+            component.modem.broadcast(port, protocol_request, message_word)
 
-            local _, _, id, _, _, message = event.pull(timeout, "modem_message")
+            local function filterDHCPResponse(type, dest, origin, port, _, protocol)
+                -- check if the request is an arp request and if it is on the right port and if it is directed to this device
+                if type ~= "modem_message" or port ~= 10 or protocol ~= protocol_response then
+                    return false
+                end
+                return true
+            end
 
+            local _, _, id, _, _, protocol, message = event.pullFiltered(filterDHCPResponse)
+            
             if message then
                 config.ip = message
                 config.gateway = id
             end
+
         end
 
+        write_config(network_path .. file_name, config)
     end):detach()
+end
 
-    if t then
-        t:join()
-
-        write_config(network_path .. file_name, config) 
-    else 
-        error("Get ip thread died abruptly")
-    end
-
+function stop()
     component.modem.close(port)
 end
