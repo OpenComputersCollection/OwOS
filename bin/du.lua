@@ -10,8 +10,8 @@ local TRY=[[
 Try 'du --help' for more information.]]
 
 local VERSION=[[
-du (OpenOS bin) 1.0
-Written by payonel, patterned after GNU coreutils du]]
+du (OwOS bin) 1.0
+Patterned after GNU coreutils du]]
 
 local HELP=[[
 Usage: du [OPTION]... [FILE]...
