@@ -4,16 +4,23 @@ original repo: https://github.com/rater193/OpenComputers-1.7.10-Base-Monitor/tre
 
 -- Modyfied by Crafty-Codes
 ]] -- CONFIGURATION
+local shell = require("shell")
+local internet = require("internet")
+local fs = require("filesystem")
+
 local CONFIG = {}
 CONFIG.GIT = {}
 CONFIG.GIT.NAME = "OpenComputersCollection"
 CONFIG.GIT.REPO = "OwOS"
 CONFIG.GIT.BRANCH = "fix/dhcp"
-CONFIG.FOLDER = "/mnt/cf3/"
+CONFIG.FOLDER = ""
 
-local shell = require("shell")
-local internet = require("internet")
-local fs = require("filesystem")
+local args = shell.parse(...)
+if #args == 0 then
+    CONFIG.FOLDER = "/"
+else
+    CONFIG.FOLDER = args[1]
+end
 
 -- downloading the json libs if they do not exsist
 shell.execute('mkdir /lib')
