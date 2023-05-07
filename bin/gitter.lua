@@ -9,7 +9,7 @@ CONFIG.GIT = {}
 CONFIG.GIT.NAME = "OpenComputersCollection"
 CONFIG.GIT.REPO = "OwOS"
 CONFIG.GIT.BRANCH = "fix/dhcp"
-CONFIG.FOLDER = "/home/test"
+CONFIG.FOLDER = "/mnt/cf3/"
 
 local shell = require("shell")
 local internet = require("internet")
@@ -56,16 +56,25 @@ local function downloadTree(treedataurl, parentdir)
         if (child.type == "tree") then
             -- print("Downloading tree")
             print("Checking directory, " .. tostring(filename))
+
+            if not fs.exists(CONFIG.FOLDER .. filename) then
+                local result, reason = fs.makeDirectory(CONFIG.FOLDER .. filename)
+                if not result then
+                    print("Error mkdir: " .. reason)
+                end
+            end
+
             downloadTree(child.url, filename)
         else
-            shell.execute('rm -f "' .. tostring(filename) .. '"')
+            shell.execute('rm -f "' .. CONFIG.FOLDER .. tostring(filename) .. '"')
             -- print("Installing file")
             -- local repodata = data.decode64(json.decode(getHTTPData(child.url)).content)
             print("downloading " .. filename)
             local repodata = getHTTPData("https://raw.githubusercontent.com/" .. tostring(CONFIG.GIT.NAME) .. "/" ..
                                              tostring(CONFIG.GIT.REPO) .. "/" .. tostring(CONFIG.GIT.BRANCH) .. "/" ..
                                              tostring(filename))
-            local file = fs.open(filename, "w")
+
+            local file = fs.open(CONFIG.FOLDER .. filename, "w")
             file:write(repodata)
             file:close()
         end
@@ -111,7 +120,7 @@ if (data) then
         local commitdatatree = json.decode(commitdata).tree
         -- print("commitdatatree: ", tostring(commitdatatree))
 
-        downloadTree(commitdatatree.url, CONFIG.FOLDER)
+        downloadTree(commitdatatree.url)
     end
 
     --[[for _, v in pairs(git) do
