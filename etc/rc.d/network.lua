@@ -8,7 +8,6 @@ local network_path = "/etc/network/"
 local file_name = "interface"
 local port = 10
 local message_word = "getIp"
-local timeout = 10
 local protocol_response = "DHCP_RESPONSE"
 local protocol_request = "DHCP_REQUEST"
 
@@ -40,7 +39,7 @@ function start()
                 return true
             end
 
-            local _, _, id, _, _, protocol, message = event.pullFiltered(filterDHCPResponse)
+            local _, _, id, _, _, protocol, message = event.pullFiltered(5,filterDHCPResponse)
             
             if message then
                 config.ip = message

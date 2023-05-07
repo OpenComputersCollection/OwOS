@@ -46,7 +46,7 @@ function start()
 
             -- listen for DHCP ip request
             -- There is a timeout so if the thread gets killed it will stop and not freeze
-            _, _, id, _, _, protocol, message = event.pullFiltered(filterDHCPRequest)
+            _, _, id, _, _, protocol, message = event.pullFiltered(5, filterDHCPRequest)
             local setIp = nil
 
             -- Fuck you LUA
