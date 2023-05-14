@@ -1,6 +1,6 @@
-require "file"
 local component = require("component")
 local event = require("event")
+local file = require("file")
 
 local arp_path = "/etc/network/"
 local arp_cache = "arp.cache"
@@ -18,8 +18,8 @@ function discover(destinationIP)
         component.modem.broadcast(1, "ARP_DISCOVER", destinationIP)
         local type, dest, origin, port, distance, protocol, ip_address = event.pullFiltered(1, filterARP)
 
-        local f = read_config(arp_path .. arp_cache)
-        f[destinationIP] = origin
-        write_config(arp_path .. arp_cache, f)
+        local config_load = file.read_config(arp_path .. arp_cache)
+        config_load[destinationIP] = origin
+        file.write_config(arp_path .. arp_cache, config_load)
     end
 end
