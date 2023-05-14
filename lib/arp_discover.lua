@@ -5,8 +5,6 @@ local event = require("event")
 local arp_path = "/etc/network/"
 local arp_cache = "arp.cache"
 
-component.modem.open(1)
-
 local function filterARP(type, dest, origin, port, _, protocol, ip_address)
     if type ~= "modem_message" or port ~= 1 or protocol ~= "ARP_RESPOND" then
         return false
@@ -16,10 +14,12 @@ end
 
 function discover(destinationIP)
     -- protocol, destination device ip
-    component.modem.broadcast(1, "ARP_DISCOVER", destinationIP)
-    local type, dest, origin, port, distance, protocol, ip_address = event.pullFiltered(1, filterARP)
+    if component.isAvailable("modem") and component.modem.isOpen(1) then
+        component.modem.broadcast(1, "ARP_DISCOVER", destinationIP)
+        local type, dest, origin, port, distance, protocol, ip_address = event.pullFiltered(1, filterARP)
 
-    local f = read_config(arp_path .. arp_cache)
-    f[destinationIP] = origin
-    write_config(arp_path .. arp_cache, f)
+        local f = read_config(arp_path .. arp_cache)
+        f[destinationIP] = origin
+        write_config(arp_path .. arp_cache, f)
+    end
 end
