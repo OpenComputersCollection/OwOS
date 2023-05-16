@@ -1,8 +1,8 @@
-local fs = require("filesystem")
+local filesystem = require("filesystem")
 local component = require("component")
 local thread = require("thread")
 local event = require "event"
-local cw = require("file")
+local file = require("file")
 
 local network_path = "/etc/network/"
 local file_name = "interface"
@@ -16,9 +16,11 @@ local config = {
     ip = nil
 }
 
+local dhcp_thread
+
 function start()
-    if not fs.exists(network_path) then
-        local result, reason = fs.makeDirectory(network_path)
+    if not filesystem.exists(network_path) then
+        local result, reason = filesystem.makeDirectory(network_path)
         if not result then
             print("Error mkdir: " .. reason)
         end
@@ -26,7 +28,7 @@ function start()
 
     component.modem.open(port)
 
-    local t = thread.create(function()
+    dhcp_thread = thread.create(function()
 
         while not config.ip and component.modem.isOpen(port) do
             component.modem.broadcast(port, protocol_request, message_word)
@@ -48,10 +50,13 @@ function start()
 
         end
 
-        cw.write_config(network_path .. file_name, config)
+        file.write_config(network_path .. file_name, config)
     end):detach()
 end
 
 function stop()
+    if dhcp_thread then
+        thread.kill(dhcp_thread)
+    end
     component.modem.close(port)
 end

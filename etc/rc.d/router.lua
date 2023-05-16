@@ -1,8 +1,8 @@
-local cm = require("component").modem
-local fs = require("filesystem")
+local component = require("component")
+local filesystem = require("filesystem")
 local event = require("event")
 local thread = require("thread")
-local cw = require("file")
+local file = require("file")
 
 local config_file = "/etc/network/iptable"
 local config_interface_file = "/etc/network/interface"
@@ -17,24 +17,26 @@ local router_config = {
     ip = base_ip .. "1"
 }
 
+local router_thread
+
 function start()
-    if not fs.exists("/etc/network/") then
-        local result, reason = fs.makeDirectory("/etc/network/")
+    if not filesystem.exists("/etc/network/") then
+        local result, reason = filesystem.makeDirectory("/etc/network/")
         if not result then
             print("Error mkdir: " .. reason)
         end
     end
 
-    cw.write_config(config_interface_file, router_config)
+    file.write_config(config_interface_file, router_config)
 
-    local ipTabel = cw.read_config(config_file)
+    local ipTabel = file.read_config(config_file)
 
-    local t = thread.create(function()
+    router_thread = thread.create(function()
 
         -- Open port 10 for DHCP
-        cm.open(port)
+        component.modem.open(port)
 
-        while cm.isOpen(port) do
+        while true do
 
             local function filterDHCPRequest(type, dest, origin, port, _, protocol, message)
                 -- check if the request is an arp request and if it is on the right port and if it is directed to this device
@@ -66,19 +68,23 @@ function start()
                 -- remember ip and id of computer
                 ipTabel[setIp] = id
                 -- update config file
-                cw.write_config(config_file, ipTabel)
+                file.write_config(config_file, ipTabel)
             end
 
             -- wait for Computer to switch to puller
             os.sleep(1)
             -- send ip to computer
-            cm.send(id, port, protocol_response, setIp)
+            component.modem.send(id, port, protocol_response, setIp)
 
         end
     end):detach()
 end
 
 function stop()
-    cm.close(port)
+    if dhcp_thread then
+        thread.kill(router_thread)
+    end
+
+    component.modem.close(port)
 end
 
